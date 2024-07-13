@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Prisma } from '@prisma/client';
+import { SerializeBigintInterceptor } from '@common/interceptors/serialize-bigint/serialize-bigint.interceptor';
 
 @Controller('user')
+@UseInterceptors(SerializeBigintInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

@@ -1,23 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { DatabaseService } from 'src/core/database/database.service';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { BcryptService } from '@common/modules/Bcrypt/Bcrypt.service';
+import { DatabaseService } from '@core/database/database.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  private readonly userRepository: PrismaClient['user'];
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly bcryptService: BcryptService,
+  ) {
+    this.userRepository = this.databaseService.user;
+  }
 
   async create(createUserDto: Prisma.UserCreateInput) {
+    createUserDto.password = await this.bcryptService.encrypt(
+      createUserDto.password,
+    );
     return this.databaseService.user.create({
       data: createUserDto,
     });
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
+  findAll() {}
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(phone: number) {
+    return this.userRepository.findUnique({
+      where: { phone },
+    });
   }
 
   update(id: number, updateUserDto: Prisma.UserUpdateInput) {
