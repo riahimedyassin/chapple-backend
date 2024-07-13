@@ -6,16 +6,20 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
+import { createMessageDto } from './dto';
+import { SerializeBigintInterceptor } from '@common/interceptors/serialize-bigint/serialize-bigint.interceptor';
 
 @Controller('message')
+@UseInterceptors(SerializeBigintInterceptor)
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
   @Post()
-  create(@Body() createMessageDto) {
-    return this.messageService.create(createMessageDto);
+  async create(@Body() createMessageDto: createMessageDto) {
+    return await this.messageService.create(createMessageDto);
   }
 
   @Get()

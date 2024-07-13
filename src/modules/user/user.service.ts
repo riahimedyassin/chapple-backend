@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { BcryptService } from '@common/modules/Bcrypt/Bcrypt.service';
 import { DatabaseService } from '@core/database/database.service';
+import { UpdateUserDto } from './dto';
 
 @Injectable()
 export class UserService {
@@ -22,19 +23,30 @@ export class UserService {
     });
   }
 
-  findAll() {}
+  async findAll() {
+    return this.userRepository.findMany({});
+  }
 
-  findOne(phone: number) {
+  findOne(phone: string) {
     return this.userRepository.findUnique({
       where: { phone },
     });
   }
 
-  update(id: number, updateUserDto: Prisma.UserUpdateInput) {
-    return `This action updates a #${id} user`;
+  async update(phone: string, updateUserDto: UpdateUserDto) {
+    return this.userRepository.update({
+      where: {
+        phone,
+      },
+      data: updateUserDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(phone: string) {
+    return this.userRepository.delete({
+      where: {
+        phone,
+      },
+    });
   }
 }
