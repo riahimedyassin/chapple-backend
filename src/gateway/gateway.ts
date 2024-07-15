@@ -1,4 +1,5 @@
-import { Logger, OnModuleInit } from '@nestjs/common';
+import { JwtGuard } from '@core/auth/guards/JwtGuard.guard';
+import { Logger, OnModuleInit, UseGuards } from '@nestjs/common';
 import {
   MessageBody,
   OnGatewayConnection,
@@ -20,6 +21,7 @@ export class MyGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
   onModuleInit() {}
+  @UseGuards(JwtGuard)
   @SubscribeMessage('message')
   onNewMessage(@MessageBody() body: { content: string }) {
     console.log(body);

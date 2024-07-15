@@ -17,13 +17,14 @@ import { User } from '@common/decorators/user/user.decorator';
 import { RequestUserInterface } from '@interfaces/RequestUser.interface';
 import { HttpResponse } from '@common/models/HttpResponse';
 import { CreateUserDto } from './dto/create-user.dto';
+import { JwtGuard } from '@core/auth/guards/JwtGuard.guard';
 
 @Controller('users')
 @UseInterceptors(SerializeBigintInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('login')
   @HttpCode(HttpStatus.OK)
   @UseGuards(UserAuthGuard)
   async login(@User() user: RequestUserInterface) {
@@ -36,6 +37,7 @@ export class UserController {
   }
 
   @Get()
+  @UseGuards(JwtGuard)
   findAll() {
     return this.userService.findAll();
   }
