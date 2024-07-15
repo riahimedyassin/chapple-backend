@@ -3,22 +3,35 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UseInterceptors,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Prisma } from '@prisma/client';
 import { SerializeBigintInterceptor } from '@common/interceptors/serialize-bigint/serialize-bigint.interceptor';
+import { UserAuthGuard } from '@core/auth/guards/UserAuthGuard.guard';
+import { User } from '@common/decorators/user/user.decorator';
+import { RequestUserInterface } from '@interfaces/RequestUser.interface';
+import { HttpResponse } from '@common/models/HttpResponse';
+import { CreateUserDto } from './dto/create-user.dto';
 
-@Controller('user')
+@Controller('users')
 @UseInterceptors(SerializeBigintInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Body() createUserDto: Prisma.UserCreateInput) {
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(UserAuthGuard)
+  async login(@User() user: RequestUserInterface) {
+    return new HttpResponse(user, 'Logged Successfully');
+  }
+
+  @Post('register')
+  async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
     return await this.userService.create(createUserDto);
   }
 

@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { UserService } from 'src/modules/user/user.service';
 
+@Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,

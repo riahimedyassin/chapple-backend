@@ -5,6 +5,8 @@ import { GatewayModule } from './gateway/gateway.module';
 import { MessageModule } from './modules/message/message.module';
 import { BcryptModule } from './common/modules/Bcrypt/Bcrypt.module';
 import { LoggerModule } from '@core/logger/Logger.module';
+import { AuthModule } from '@core/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -13,7 +15,11 @@ import { LoggerModule } from '@core/logger/Logger.module';
     GatewayModule,
     MessageModule,
     BcryptModule,
-    LoggerModule
+    LoggerModule,
+    AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
   ],
   controllers: [],
   providers: [],

@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('/api/chapple/v1');
   app.useGlobalFilters(new PrismaConstraintFilter());
   app.useGlobalPipes(
     new ValidationPipe({
