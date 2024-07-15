@@ -5,6 +5,7 @@ import { UserStrategy } from './strategy/User.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategy/Jwt.strategy';
+import { SocketJwtStrategy } from './strategy/SocketJwt.strategy';
 
 @Module({
   imports: [
@@ -18,7 +19,13 @@ import { JwtStrategy } from './strategy/Jwt.strategy';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, UserStrategy, UserService, JwtStrategy],
-  exports : [JwtStrategy,JwtModule]
+  providers: [
+    AuthService,
+    UserStrategy,
+    UserService,
+    JwtStrategy,
+    SocketJwtStrategy,
+  ],
+  exports: [JwtStrategy, JwtModule],
 })
 export class AuthModule {}

@@ -21,7 +21,8 @@
       "@common/*" : ["src/common/*"], 
       "@interfaces/*" : ["src/interfaces/*"],
       "@modules/*" : ["src/modules/*"],
-      "@core/*" : ["src/core/*"]
+      "@core/*" : ["src/core/*"],
+      "@lib/*" : ["src/lib/*"]
     }
   }
 }

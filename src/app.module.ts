@@ -3,7 +3,7 @@ import { DatabaseModule } from './core/database/database.module';
 import { UserModule } from './modules/user/user.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { MessageModule } from './modules/message/message.module';
-import { BcryptModule } from './common/modules/Bcrypt/Bcrypt.module';
+import { BcryptModule } from './lib/Bcrypt/Bcrypt.module';
 import { LoggerModule } from '@core/logger/Logger.module';
 import { AuthModule } from '@core/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';

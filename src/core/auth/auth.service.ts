@@ -1,4 +1,4 @@
-import { BcryptService } from '@common/modules/Bcrypt/Bcrypt.service';
+import { BcryptService } from '@lib/Bcrypt/Bcrypt.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';

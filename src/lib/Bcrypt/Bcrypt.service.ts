@@ -1,6 +1,6 @@
 import { Global, Injectable } from '@nestjs/common';
 import { genSaltSync, compare, hash } from 'bcrypt';
-import { NonNullableAny } from '../../types/NonNullableAny.type';
+import { NonNullableAny } from '@common/types/NonNullableAny.type';
 @Injectable()
 export class BcryptService {
   private readonly salt: string;
