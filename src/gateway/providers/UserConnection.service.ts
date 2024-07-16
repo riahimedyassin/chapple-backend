@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserConnectionService {
-  private readonly connectedUser: Map<string, string> = new Map();
+  private readonly connectedUsers: Map<string, string> = new Map();
   /**
    * @description Get the socket ID of the given phone number , otherwise return null.
    * @param {string} phone Phone number
    */
   getSocketID(phone: string) {
-    return this.connectedUser.get(phone);
+    return this.connectedUsers.get(phone);
   }
   /**
    * @description Register a new connection
@@ -16,12 +16,20 @@ export class UserConnectionService {
    * @param socketID ID of the socket retrieved from the client
    */
   setConnection(phone: string, socketID: string) {
-    this.connectedUser.set(phone, socketID);
+    this.connectedUsers.set(phone, socketID);
   }
   isConnected(phone: string) {
-    return this.connectedUser.get(phone) != undefined;
+    return this.connectedUsers.get(phone) != undefined;
   }
   abortConnection(phone: string) {
-    this.connectedUser.delete(phone);
+    this.connectedUsers.delete(phone);
+    console.log(this.connectedUsers);
+  }
+  abortConnectionFromSocketID(socketID: string) {
+    for (const [key, value] of this.connectedUsers) {
+      if (value == socketID) {
+        return this.connectedUsers.delete(key);
+      }
+    }
   }
 }

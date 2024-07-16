@@ -7,6 +7,7 @@ import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -27,7 +28,7 @@ import { createMessageDto } from '@modules/message/dto';
     allowedHeaders: ['Content-Type'],
   },
 })
-export class MyGateway implements OnGatewayConnection {
+export class MyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly authService: AuthService,
     private readonly userConnectionService: UserConnectionService,
@@ -41,21 +42,24 @@ export class MyGateway implements OnGatewayConnection {
     if (!payload) return client.disconnect(true);
     this.userConnectionService.setConnection(payload.phone, client.id);
   }
+  handleDisconnect(@ConnectedSocket() client: Socket) {
+    this.userConnectionService.abortConnectionFromSocketID(client.id);
+  }
 
   @SubscribeMessage('message')
   @UseGuards(SocketJwtGuard)
   onNewMessage(
-    @MessageBody(ValidationPipe) body: MessageModel,
+    @MessageBody(ValidationPipe) { content, to }: MessageModel,
     @ConnectedSocket() client: SocketAuth,
   ) {
-    const connected = client.handshake.user;
-    const target = this.userConnectionService.getSocketID(body.to);
+    const { phone } = client.handshake.user;
+    const target = this.userConnectionService.getSocketID(to);
     if (target) {
-      this.server.to(target).emit('message', body.content);
+      this.server.to(target).emit('message', content);
     }
     this.eventEmitter.emit(
       'message.create',
-      new createMessageDto(body.to, body.content, connected.phone),
+      new createMessageDto(to, content, phone),
     );
   }
 }
