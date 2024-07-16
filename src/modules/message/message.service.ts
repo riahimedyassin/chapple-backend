@@ -17,12 +17,12 @@ export class MessageService {
         content: createMessageDto.content,
         from: {
           connect: {
-            phone: createMessageDto.fromPhone,
+            email: createMessageDto.fromEmail,
           },
         },
         to: {
           connect: {
-            phone: createMessageDto.toPhone,
+            email: createMessageDto.toEmail,
           },
         },
       },

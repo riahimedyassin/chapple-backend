@@ -27,25 +27,25 @@ export class UserService {
     return this.userRepository.findMany({});
   }
 
-  findOne(phone: string) {
+  findOne(email: string) {
     return this.userRepository.findUnique({
-      where: { phone },
+      where: { email },
     });
   }
 
-  async update(phone: string, updateUserDto: UpdateUserDto) {
+  async update(email: string, updateUserDto: UpdateUserDto) {
     return this.userRepository.update({
       where: {
-        phone,
+        email,
       },
       data: updateUserDto,
     });
   }
 
-  remove(phone: string) {
+  remove(email: string) {
     return this.userRepository.delete({
       where: {
-        phone,
+        email,
       },
     });
   }

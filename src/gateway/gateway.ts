@@ -40,7 +40,7 @@ export class MyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(@ConnectedSocket() client: Socket) {
     const payload = this.authService.extractTokenFromSocket(client);
     if (!payload) return client.disconnect(true);
-    this.userConnectionService.setConnection(payload.phone, client.id);
+    this.userConnectionService.setConnection(payload.email, client.id);
   }
   handleDisconnect(@ConnectedSocket() client: Socket) {
     this.userConnectionService.abortConnectionFromSocketID(client.id);
@@ -52,14 +52,17 @@ export class MyGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody(ValidationPipe) { content, to }: MessageModel,
     @ConnectedSocket() client: SocketAuth,
   ) {
-    const { phone } = client.handshake.user;
+    const { email } = client.handshake.user;
     const target = this.userConnectionService.getSocketID(to);
     if (target) {
-      this.server.to(target).emit('message', content);
+      this.server.to(target).emit('message', {
+        from: email,
+        content: content,
+      });
     }
     this.eventEmitter.emit(
       'message.create',
-      new createMessageDto(to, content, phone),
+      new createMessageDto(to, content, email),
     );
   }
 }

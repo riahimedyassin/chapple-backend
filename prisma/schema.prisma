@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  phone            String    @id
+  email            String    @id
   password         String
   username         String    @unique
   sentMessages     Message[] @relation("from")
@@ -24,8 +24,8 @@ model User {
 model Message {
   id        Int    @id @default(autoincrement())
   content   String
-  fromPhone String
-  toPhone   String
-  from      User   @relation("from", fields: [fromPhone], references: [phone])
-  to        User   @relation("to", fields: [toPhone], references: [phone])
+  fromEmail String
+  toEmail   String
+  from      User   @relation("from", fields: [fromEmail], references: [email])
+  to        User   @relation("to", fields: [toEmail], references: [email])
 }

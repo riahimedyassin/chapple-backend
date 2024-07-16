@@ -13,8 +13,8 @@ export class AuthService {
     private readonly bcryptService: BcryptService,
     private readonly jwtService: JwtService,
   ) {}
-  async validateUser(phone: string, password: string) {
-    const user = await this.userService.findOne(phone);
+  async validateUser(email: string, password: string) {
+    const user = await this.userService.findOne(email);
     if (!user) throw new UnauthorizedException();
     if (!this.bcryptService.compare(password, user.password))
       throw new UnauthorizedException();
@@ -22,7 +22,7 @@ export class AuthService {
   }
   generateToken(user: User) {
     return this.jwtService.sign({
-      phone: user.phone,
+      email: user.email,
       username: user.username,
     });
   }

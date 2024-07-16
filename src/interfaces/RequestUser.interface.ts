@@ -1,4 +1,4 @@
 export interface RequestUserInterface {
-  phone: string;
+  email: string;
   username: string;
 }
