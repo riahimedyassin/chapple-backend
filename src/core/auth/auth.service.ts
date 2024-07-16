@@ -4,6 +4,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { UserService } from 'src/modules/user/user.service';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class AuthService {
@@ -27,5 +28,12 @@ export class AuthService {
   }
   verfiyToken(token: string): RequestUserInterface {
     return this.jwtService.decode(token);
+  }
+  extractTokenFromSocket(socket: Socket) {
+    const headers = socket.handshake.headers;
+    if (!headers['authorization']) return null;
+    const token = headers.authorization.split(' ')[1];
+    const payload = this.verfiyToken(token);
+    return payload;
   }
 }

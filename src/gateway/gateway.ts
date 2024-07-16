@@ -2,10 +2,8 @@ import { User } from '@common/decorators/user/user.decorator';
 import { AuthService } from '@core/auth/auth.service';
 import { JwtGuard } from '@core/auth/guards/JwtGuard.guard';
 import { SocketJwtGuard } from '@core/auth/guards/SocketJwtGuard.guard';
-import { RequestUserInterface } from '@interfaces/RequestUser.interface';
-import { Logger, OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
+import { UseGuards, ValidationPipe } from '@nestjs/common';
 import {
-  BaseWsExceptionFilter,
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
@@ -15,7 +13,10 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { UserConnectionService } from './providers/UserConnection.service';
+import { UserConnectionService } from './providers';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { MessageModel } from '@common/models';
+import { SocketAuth } from '@interfaces/index';
 
 @WebSocketGateway(3001, {
   namespace: 'chat',
@@ -29,25 +30,25 @@ export class MyGateway implements OnGatewayConnection {
   constructor(
     private readonly authService: AuthService,
     private readonly userConnectionService: UserConnectionService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   @WebSocketServer()
   server: Server;
-  @UseGuards(SocketJwtGuard)
+
   handleConnection(@ConnectedSocket() client: Socket) {
-    const token = client.handshake.headers.authorization.split(' ')[1];
-    const payload = this.authService.verfiyToken(token);
+    const payload = this.authService.extractTokenFromSocket(client);
+    if (!payload) return client.disconnect(true);
     this.userConnectionService.setConnection(payload.phone, client.id);
   }
+  
   @SubscribeMessage('message')
   @UseGuards(SocketJwtGuard)
   onNewMessage(
-    @MessageBody() body: { content: string; to: string },
-    @ConnectedSocket() client,
+    @MessageBody(ValidationPipe) body: MessageModel,
+    @ConnectedSocket() client: SocketAuth,
   ) {
-    // const target = this.userConnectionService.getSocketID(body.to);
-    // console.log(target);
     this.server
-      .to(this.userConnectionService.getSocketID(client.handshake.user.phone))
+      .to(this.userConnectionService.getSocketID(body.to))
       .emit('message', body.content);
   }
 }

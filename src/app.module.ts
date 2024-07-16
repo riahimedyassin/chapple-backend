@@ -7,6 +7,7 @@ import { BcryptModule } from './lib/Bcrypt/Bcrypt.module';
 import { LoggerModule } from '@core/logger/Logger.module';
 import { AuthModule } from '@core/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -19,6 +20,9 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    EventEmitterModule.forRoot({
+      global: true,
     }),
   ],
   controllers: [],
