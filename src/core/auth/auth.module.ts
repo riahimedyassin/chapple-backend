@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategy/Jwt.strategy';
 import { SocketJwtStrategy } from './strategy/SocketJwt.strategy';
+import { BcryptService } from '@lib/providers';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SocketJwtStrategy } from './strategy/SocketJwt.strategy';
     UserService,
     JwtStrategy,
     SocketJwtStrategy,
+    BcryptService
   ],
   exports: [JwtStrategy, JwtModule, AuthService],
 })

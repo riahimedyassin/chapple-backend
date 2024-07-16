@@ -1,5 +1,5 @@
 import { RequestUserInterface } from '@interfaces/RequestUser.interface';
-import { BcryptService } from '@lib/Bcrypt/Bcrypt.service';
+import { BcryptService } from '@lib/providers/bcrypt.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
@@ -27,6 +27,7 @@ export class AuthService {
     });
   }
   verfiyToken(token: string): RequestUserInterface {
+    this.jwtService.verifyAsync(token, { ignoreExpiration: false });
     return this.jwtService.decode(token);
   }
   extractTokenFromSocket(socket: Socket) {

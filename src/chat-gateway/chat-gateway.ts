@@ -2,7 +2,7 @@ import { User } from '@common/decorators/user/user.decorator';
 import { AuthService } from '@core/auth/auth.service';
 import { JwtGuard } from '@core/auth/guards/JwtGuard.guard';
 import { SocketJwtGuard } from '@core/auth/guards/SocketJwtGuard.guard';
-import { UseGuards, ValidationPipe } from '@nestjs/common';
+import { UseFilters, UseGuards, ValidationPipe } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -15,10 +15,11 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UserConnectionService } from './providers';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { MessageModel } from '@common/models';
 import { SocketAuth } from '@interfaces/index';
 import { createMessageDto } from '@modules/message/dto';
+import { SocketAuthFilter } from '@common/filters/socket-auth/socket-auth.filter';
 
 @WebSocketGateway(3001, {
   namespace: 'chat',
@@ -28,7 +29,7 @@ import { createMessageDto } from '@modules/message/dto';
     allowedHeaders: ['Content-Type'],
   },
 })
-export class MyGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly authService: AuthService,
     private readonly userConnectionService: UserConnectionService,
@@ -38,9 +39,13 @@ export class MyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   handleConnection(@ConnectedSocket() client: Socket) {
-    const payload = this.authService.extractTokenFromSocket(client);
-    if (!payload) return client.disconnect(true);
-    this.userConnectionService.setConnection(payload.email, client.id);
+    try {
+      const payload = this.authService.extractTokenFromSocket(client);
+      if (!payload) return client.disconnect(true);
+      this.userConnectionService.setConnection(payload.email, client.id);
+    } catch (error) {
+      return client.disconnect(true);
+    }
   }
   handleDisconnect(@ConnectedSocket() client: Socket) {
     this.userConnectionService.abortConnectionFromSocketID(client.id);

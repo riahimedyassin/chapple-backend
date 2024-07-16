@@ -12,6 +12,7 @@ export class MessageService {
   }
   @OnEvent('message.create')
   async create(createMessageDto: createMessageDto) {
+    console.log(createMessageDto);
     this.messageRepository.create({
       data: {
         content: createMessageDto.content,
@@ -29,8 +30,19 @@ export class MessageService {
     });
   }
 
-  findAll() {
-    return this.messageRepository.findMany({});
+  async findAll(email: string) {
+    return this.messageRepository.findMany({
+      where: {
+        OR: [
+          {
+            toEmail: email,
+          },
+          {
+            fromEmail: email,
+          },
+        ],
+      },
+    });
   }
 
   findOne(id: number) {

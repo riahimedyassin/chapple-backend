@@ -7,19 +7,26 @@ import {
   Param,
   Delete,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { createMessageDto } from './dto';
 import { SerializeBigintInterceptor } from '@common/interceptors/serialize-bigint/serialize-bigint.interceptor';
+import { JwtGuard } from '@core/auth/guards/JwtGuard.guard';
+import { User } from '@common/decorators/user/user.decorator';
+import { RequestUserInterface } from '@interfaces/RequestUser.interface';
+import { HttpResponse } from '@common/models';
 
-@Controller('message')
+@Controller('messages')
 @UseInterceptors(SerializeBigintInterceptor)
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
   @Get()
-  findAll() {
-    return this.messageService.findAll();
+  @UseGuards(JwtGuard)
+  async findAll(@User() user: RequestUserInterface) {
+    const result = await this.messageService.findAll(user.email);
+    return new HttpResponse(result);
   }
 
   @Get(':id')
