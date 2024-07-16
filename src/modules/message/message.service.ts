@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { createMessageDto } from './dto';
 import { DatabaseService } from '@core/database/database.service';
 import { PrismaClient } from '@prisma/client';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class MessageService {
@@ -9,8 +10,9 @@ export class MessageService {
   constructor(private readonly databaseService: DatabaseService) {
     this.messageRepository = this.databaseService.message;
   }
-  create(createMessageDto: createMessageDto) {
-    return this.messageRepository.create({
+  @OnEvent('message.create')
+  async create(createMessageDto: createMessageDto) {
+    this.messageRepository.create({
       data: {
         content: createMessageDto.content,
         from: {

@@ -17,11 +17,6 @@ import { SerializeBigintInterceptor } from '@common/interceptors/serialize-bigin
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
-  @Post()
-  async create(@Body() createMessageDto: createMessageDto) {
-    return await this.messageService.create(createMessageDto);
-  }
-
   @Get()
   findAll() {
     return this.messageService.findAll();

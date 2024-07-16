@@ -17,6 +17,7 @@ import { UserConnectionService } from './providers';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { MessageModel } from '@common/models';
 import { SocketAuth } from '@interfaces/index';
+import { createMessageDto } from '@modules/message/dto';
 
 @WebSocketGateway(3001, {
   namespace: 'chat',
@@ -40,15 +41,21 @@ export class MyGateway implements OnGatewayConnection {
     if (!payload) return client.disconnect(true);
     this.userConnectionService.setConnection(payload.phone, client.id);
   }
-  
+
   @SubscribeMessage('message')
   @UseGuards(SocketJwtGuard)
   onNewMessage(
     @MessageBody(ValidationPipe) body: MessageModel,
     @ConnectedSocket() client: SocketAuth,
   ) {
-    this.server
-      .to(this.userConnectionService.getSocketID(body.to))
-      .emit('message', body.content);
+    const connected = client.handshake.user;
+    const target = this.userConnectionService.getSocketID(body.to);
+    if (target) {
+      this.server.to(target).emit('message', body.content);
+    }
+    this.eventEmitter.emit(
+      'message.create',
+      new createMessageDto(body.to, body.content, connected.phone),
+    );
   }
 }

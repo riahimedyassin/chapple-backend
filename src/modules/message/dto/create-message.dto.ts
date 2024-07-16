@@ -1,7 +1,9 @@
 import { IsEmpty } from 'class-validator';
 
 export class createMessageDto {
-  toPhone: string;
-  content: string;
-  fromPhone : string
+  constructor(
+    public toPhone: string,
+    public content: string,
+    public fromPhone: string,
+  ) {}
 }
