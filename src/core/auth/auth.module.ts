@@ -26,6 +26,6 @@ import { SocketJwtStrategy } from './strategy/SocketJwt.strategy';
     JwtStrategy,
     SocketJwtStrategy,
   ],
-  exports: [JwtStrategy, JwtModule],
+  exports: [JwtStrategy, JwtModule, AuthService],
 })
 export class AuthModule {}

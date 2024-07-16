@@ -1,3 +1,4 @@
+import { RequestUserInterface } from '@interfaces/RequestUser.interface';
 import { BcryptService } from '@lib/Bcrypt/Bcrypt.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -23,5 +24,8 @@ export class AuthService {
       phone: user.phone,
       username: user.username,
     });
+  }
+  verfiyToken(token: string): RequestUserInterface {
+    return this.jwtService.decode(token);
   }
 }

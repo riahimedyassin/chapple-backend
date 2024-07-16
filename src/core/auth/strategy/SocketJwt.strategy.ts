@@ -1,3 +1,4 @@
+import { RequestUserInterface } from '@interfaces/RequestUser.interface';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -10,14 +11,14 @@ export class SocketJwtStrategy extends PassportStrategy(
   Strategy,
   'socket-jwt',
 ) {
-  constructor(@Inject(ConfigService) private configService: ConfigService) {
+  constructor(configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.getOrThrow('SECRET_JWT'),
     });
   }
-  async validate(payload: any) {
+  async validate(payload: RequestUserInterface) {
     return payload;
   }
 }
