@@ -1,6 +1,11 @@
-import { CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { WsException } from '@nestjs/websockets';
+import { Socket } from 'net';
 import { Observable } from 'rxjs';
 
 export class SocketJwtGuard
@@ -11,16 +16,19 @@ export class SocketJwtGuard
     return context.switchToWs().getClient().handshake;
   }
   handleRequest(err, user, info, context) {
-    if (err || !user) {
+    if (err || info instanceof Error || !user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    try {
+      const result = await super.canActivate(context);
+      return result as boolean;
+    } catch (error) {
       const client = context.switchToWs().getClient();
       client.emit('error', { message: 'Unauthorized' });
       return false;
     }
-    return user;
-  }
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    return super.canActivate(context);
   }
 }
