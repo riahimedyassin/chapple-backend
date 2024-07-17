@@ -7,6 +7,7 @@ import { LoggerModule } from '@core/logger/Logger.module';
 import { AuthModule } from '@core/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
+import { GroupModule } from './modules/group/group.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
     EventEmitterModule.forRoot({
       global: true,
     }),
+    GroupModule,
   ],
   controllers: [],
   providers: [],

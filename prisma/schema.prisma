@@ -14,11 +14,14 @@ datasource db {
 }
 
 model User {
-  email            String    @id
+  email            String         @id
   password         String
-  username         String    @unique
-  sentMessages     Message[] @relation("from")
-  receivedMessages Message[] @relation("to")
+  username         String         @unique
+  sentMessages     Message[]      @relation("from")
+  receivedMessages Message[]      @relation("to")
+  owned_groups     Group[]
+  user_groups      user_group[]
+  group_message    GroupMessage[]
 }
 
 model Message {
@@ -28,4 +31,30 @@ model Message {
   toEmail   String
   from      User   @relation("from", fields: [fromEmail], references: [email])
   to        User   @relation("to", fields: [toEmail], references: [email])
+}
+
+model GroupMessage {
+  id        Int    @id @default(autoincrement())
+  content   String
+  from      User   @relation(fields: [fromEmail], references: [email])
+  fromEmail String
+  group     Group  @relation(fields: [groupId], references: [id])
+  groupId   Int
+}
+
+model Group {
+  id         Int            @id @default(autoincrement())
+  name       String
+  owner      User           @relation(fields: [ownerEmail], references: [email])
+  ownerEmail String
+  user_group user_group[]
+  messages   GroupMessage[]
+}
+
+model user_group {
+  id        Int    @id @default(autoincrement())
+  user      User   @relation(fields: [userEmail], references: [email])
+  userEmail String
+  group     Group  @relation(fields: [groupId], references: [id])
+  groupId   Int
 }
