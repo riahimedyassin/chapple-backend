@@ -1,3 +1,4 @@
+import { RequestUserInterface } from '@interfaces/RequestUser.interface';
 import {
   createParamDecorator,
   ExecutionContext,
@@ -8,6 +9,6 @@ import { Request } from 'express';
 export const User = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request: Request = ctx.switchToHttp().getRequest();
-    return request.user;
+    return request.user as RequestUserInterface;
   },
 );
