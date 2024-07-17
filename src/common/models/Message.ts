@@ -1,4 +1,4 @@
-export class MessageModel {
+export class MessageModel<T> {
   content: string;
-  to: string;
+  to: T;
 }

@@ -52,16 +52,16 @@ export class GroupController {
     return result;
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body(ValidationPipe) updateGroupDto: UpdateGroupDto,
-  ) {
-    return this.groupService.update(+id, updateGroupDto);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body(ValidationPipe) updateGroupDto: UpdateGroupDto,
+  // ) {
+  //   return this.groupService.update(+id, updateGroupDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.groupService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.groupService.remove(+id);
+  // }
 }
