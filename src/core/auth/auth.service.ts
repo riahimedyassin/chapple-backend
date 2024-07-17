@@ -26,15 +26,16 @@ export class AuthService {
       username: user.username,
     });
   }
-  verfiyToken(token: string): RequestUserInterface {
-    this.jwtService.verifyAsync(token, { ignoreExpiration: false });
-    return this.jwtService.decode(token);
+  verfiyToken(token: string): Promise<RequestUserInterface> {
+    return this.jwtService
+      .verifyAsync(token, { ignoreExpiration: false })
+      .then((_) => this.jwtService.decode(token))
+      .catch((_) => null);
   }
   extractTokenFromSocket(socket: Socket) {
     const headers = socket.handshake.headers;
     if (!headers['authorization']) return null;
     const token = headers.authorization.split(' ')[1];
-    const payload = this.verfiyToken(token);
-    return payload;
+    return this.verfiyToken(token);
   }
 }

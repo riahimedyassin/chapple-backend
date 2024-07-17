@@ -37,10 +37,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {}
   @WebSocketServer()
   server: Server;
-
-  handleConnection(@ConnectedSocket() client: Socket) {
+  async handleConnection(@ConnectedSocket() client: Socket) {
     try {
-      const payload = this.authService.extractTokenFromSocket(client);
+      const payload = await this.authService.extractTokenFromSocket(client);
       if (!payload) return client.disconnect(true);
       this.userConnectionService.setConnection(payload.email, client.id);
     } catch (error) {
