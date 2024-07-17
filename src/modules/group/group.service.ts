@@ -24,6 +24,7 @@ export class GroupService {
         },
       },
     });
+    await this.addUsers(group.id, owner);
     if (createGroupDto.users) this.addUsers(group.id, createGroupDto.users);
     return group;
   }

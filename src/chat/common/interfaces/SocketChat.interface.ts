@@ -9,7 +9,7 @@ export interface SocketChat<T> {
    * @param {T} primary Primary key to identify the connection
    * @param socketID ID of the socket retrieved from the client
    */
-  registerConnection(primary: T, socketID: string): void;
+  registerConnection(primary: T, socketID?: string): void;
   /**
    * @description Check if the user/room is registered and have a previous connection with the socket.
    * @param primary
