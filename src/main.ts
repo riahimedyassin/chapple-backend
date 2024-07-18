@@ -8,6 +8,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('/api/chapple/v1');
   app.useGlobalFilters(new PrismaConstraintFilter(), new SocketAuthFilter());
+  app.enableCors({
+    origin : "*"
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
