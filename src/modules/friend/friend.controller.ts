@@ -1,0 +1,64 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+  ParseIntPipe,
+} from '@nestjs/common';
+import { FriendService } from './friend.service';
+import { CreateFriendDto } from './dto/create-friend.dto';
+import { UpdateFriendDto } from './dto/update-friend.dto';
+import { JwtGuard } from '@core/auth/guards/JwtGuard.guard';
+import { User } from '@common/decorators/user/user.decorator';
+import { RequestUserInterface } from '@interfaces/RequestUser.interface';
+import { HttpResponse } from '@common/models';
+
+@Controller('friend')
+export class FriendController {
+  constructor(private readonly friendService: FriendService) {}
+
+  @Post()
+  @UseGuards(JwtGuard)
+  async create(
+    @Body() createFriendDto: CreateFriendDto,
+    @User() user: RequestUserInterface,
+  ) {
+    const response = await this.friendService.create(
+      createFriendDto,
+      user.email,
+    );
+    return new HttpResponse(response, 'Friend request sent', 201);
+  }
+
+  @Get()
+  @UseGuards(JwtGuard)
+  findAll(@User() user: RequestUserInterface) {
+    return this.friendService.findAll(user.email);
+  }
+  @Patch('respond/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async aceeptFriendRequest(@Param('id', ParseIntPipe) id: number) {
+    return this.friendService.update(id, { accepted: true });
+  }
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.friendService.findOne(+id);
+  // }
+
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateFriendDto: UpdateFriendDto) {
+  //   return this.friendService.update(+id, updateFriendDto);
+  // }
+
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.friendService.remove(id);
+  }
+}

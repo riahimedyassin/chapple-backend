@@ -16,7 +16,6 @@ export class MessageService {
   }
   @OnEvent('message.create')
   async create(createMessageDto: createMessageDto) {
-    console.log(createMessageDto);
     this.messageRepository.create({
       data: {
         content: createMessageDto.content,

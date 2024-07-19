@@ -14,14 +14,16 @@ datasource db {
 }
 
 model User {
-  email            String         @id
-  password         String
-  username         String         @unique
-  sentMessages     Message[]      @relation("from")
-  receivedMessages Message[]      @relation("to")
-  owned_groups     Group[]
-  user_groups      user_group[]
-  group_message    GroupMessage[]
+  email              String         @id
+  password           String
+  username           String         @unique
+  sentMessages       Message[]      @relation("from")
+  receivedMessages   Message[]      @relation("to")
+  owned_groups       Group[]
+  user_groups        user_group[]
+  group_message      GroupMessage[]
+  friend_requests    Friend[]       @relation("friend_requests")
+  friend_invitations Friend[]       @relation("friend_invitation")
 }
 
 model Message {
@@ -57,4 +59,14 @@ model user_group {
   userEmail String
   group     Group  @relation(fields: [groupId], references: [id])
   groupId   Int
+}
+
+model Friend {
+  id            Int      @id @default(autoincrement())
+  sent_by       User     @relation("friend_requests", fields: [sent_by_email], references: [email])
+  sent_by_email String
+  sent_to       User     @relation("friend_invitation", fields: [sent_to_email], references: [email])
+  sent_to_email String
+  sent_at       DateTime @default(now())
+  accepted      Boolean  @default(false)
 }
