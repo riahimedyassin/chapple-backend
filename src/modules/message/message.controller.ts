@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { createMessageDto } from './dto';
@@ -22,10 +23,13 @@ import { HttpResponse } from '@common/models';
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
-  @Get()
+  @Get(':page')
   @UseGuards(JwtGuard)
-  async findAll(@User() user: RequestUserInterface) {
-    const result = await this.messageService.findAll(user.email);
+  async findAll(
+    @User() user: RequestUserInterface,
+    @Param(ParseIntPipe) page: number = 1,
+  ) {
+    const result = await this.messageService.findAll(user.email, page);
     return new HttpResponse(result);
   }
 

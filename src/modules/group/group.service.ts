@@ -3,14 +3,16 @@ import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { DatabaseService } from '@core/database/database.service';
 import { PrismaClient, user_group } from '@prisma/client';
+import { UserGroupService } from './providers/user-group.service';
 
 @Injectable()
 export class GroupService {
   private readonly groupRepository: PrismaClient['group'];
-  private readonly userGroupRepository: PrismaClient['user_group'];
-  constructor(private readonly databaseService: DatabaseService) {
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly userGroupService: UserGroupService,
+  ) {
     this.groupRepository = this.databaseService.group;
-    this.userGroupRepository = this.databaseService.user_group;
   }
 
   async create(createGroupDto: CreateGroupDto, owner: string) {
@@ -32,21 +34,11 @@ export class GroupService {
   addUsers(group: number, email: string[]): Promise<boolean>;
   addUsers(group: number, email: string): Promise<boolean>;
   async addUsers(group: number, email: string | string[]) {
-    const data = (group: number, email: string) => ({
-      group: { connect: { id: group } },
-      user: { connect: { email: email } },
-    });
     if (Array.isArray(email))
       email.map(
-        async (mail) =>
-          await this.userGroupRepository.create({
-            data: data(group, mail),
-          }),
+        async (mail) => await this.userGroupService.create(group, mail),
       );
-    else
-      await this.userGroupRepository.create({
-        data: data(group, email),
-      });
+    else await this.userGroupService.create(group, email);
     return true;
   }
 

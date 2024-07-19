@@ -13,12 +13,20 @@ export class UserGroupService {
       where: {
         AND: [
           {
-            groupId: +group ,
+            groupId: +group,
           },
           {
             userEmail: email,
           },
         ],
+      },
+    });
+  }
+  create(group: number, email: string) {
+    return this.userGroupRepository.create({
+      data: {
+        group: { connect: { id: group } },
+        user: { connect: { email: email } },
       },
     });
   }

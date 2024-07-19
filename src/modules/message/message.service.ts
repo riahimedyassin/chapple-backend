@@ -3,6 +3,10 @@ import { createMessageDto } from './dto';
 import { DatabaseService } from '@core/database/database.service';
 import { PrismaClient } from '@prisma/client';
 import { OnEvent } from '@nestjs/event-emitter';
+import {
+  PAGINCATION_LIMIT,
+  PAGINCATION_LIMIT_MESSAGE,
+} from '@common/constants';
 
 @Injectable()
 export class MessageService {
@@ -30,8 +34,12 @@ export class MessageService {
     });
   }
 
-  async findAll(email: string) {
+  async findAll(email: string, page: number) {
+    const end = PAGINCATION_LIMIT_MESSAGE * page - 1;
+    const start = end - PAGINCATION_LIMIT_MESSAGE;
     return this.messageRepository.findMany({
+      skip: start,
+      take: PAGINCATION_LIMIT_MESSAGE,
       where: {
         OR: [
           {
