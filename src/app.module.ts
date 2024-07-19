@@ -10,6 +10,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GroupModule } from './modules/group/group.module';
 import { GroupChatGatewayModule } from './chat/group-chat-gateway/group-chat-gateway.module';
 import { FriendModule } from './modules/friend/friend.module';
+import { GroupMessageModule } from './modules/group-message/group-message.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { FriendModule } from './modules/friend/friend.module';
     }),
     GroupModule,
     FriendModule,
+    GroupMessageModule,
   ],
   controllers: [],
   providers: [],
