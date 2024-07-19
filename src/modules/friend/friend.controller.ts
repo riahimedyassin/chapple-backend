@@ -19,7 +19,7 @@ import { User } from '@common/decorators/user/user.decorator';
 import { RequestUserInterface } from '@interfaces/RequestUser.interface';
 import { HttpResponse } from '@common/models';
 
-@Controller('friend')
+@Controller('friends')
 export class FriendController {
   constructor(private readonly friendService: FriendService) {}
 
@@ -35,12 +35,26 @@ export class FriendController {
     );
     return new HttpResponse(response, 'Friend request sent', 201);
   }
-
-  @Get()
+  @Get('')
   @UseGuards(JwtGuard)
-  findAll(@User() user: RequestUserInterface) {
-    return this.friendService.findAll(user.email);
+  async findAll(@User() user: RequestUserInterface) {
+    const result = await this.friendService.findAll(user.email);
+    return new HttpResponse(result, 'Friend list retrieved sucessfully');
   }
+
+  @Get('requests')
+  @UseGuards(JwtGuard)
+  async findAllRequests(@User() user: RequestUserInterface) {
+    const result = await this.friendService.findAllRequests(user.email);
+    return new HttpResponse(result, 'Friend list retrieved sucessfully');
+  }
+  @Get('invitations')
+  @UseGuards(JwtGuard)
+  async findAllInvitations(@User() user: RequestUserInterface) {
+    const result = await this.friendService.findAllInvitations(user.email);
+    return new HttpResponse(result, 'Friend list retrieved sucessfully');
+  }
+
   @Patch('respond/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async aceeptFriendRequest(@Param('id', ParseIntPipe) id: number) {

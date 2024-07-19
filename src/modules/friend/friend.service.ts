@@ -33,7 +33,30 @@ export class FriendService {
       },
     });
   }
-
+  findAllRequests(email: string) {
+    return this.friendRepository.findMany({
+      where: {
+        AND: [
+          { sent_by_email: email },
+          {
+            accepted: false,
+          },
+        ],
+      },
+    });
+  }
+  findAllInvitations(email: string) {
+    return this.friendRepository.findMany({
+      where: {
+        AND: [
+          { sent_to_email: email },
+          {
+            accepted: false,
+          },
+        ],
+      },
+    });
+  }
   findOne(id: number) {
     return `This action returns a #${id} friend`;
   }

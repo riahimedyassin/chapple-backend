@@ -7,15 +7,29 @@ import {
   PAGINCATION_LIMIT,
   PAGINCATION_LIMIT_MESSAGE,
 } from '@common/constants';
+import { FriendService } from '@modules/friend/friend.service';
 
 @Injectable()
 export class MessageService {
   private readonly messageRepository: PrismaClient['message'];
-  constructor(private readonly databaseService: DatabaseService) {
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly friendService: FriendService,
+  ) {
     this.messageRepository = this.databaseService.message;
   }
   @OnEvent('message.create')
   async create(createMessageDto: createMessageDto) {
+    if (
+      !(await this.friendService.areFriends(
+        createMessageDto.fromEmail,
+        createMessageDto.toEmail,
+      ))
+    )
+      this.friendService.create(
+        { sent_to: createMessageDto.toEmail },
+        createMessageDto.fromEmail,
+      );
     this.messageRepository.create({
       data: {
         content: createMessageDto.content,
