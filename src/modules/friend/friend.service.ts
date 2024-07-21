@@ -3,6 +3,7 @@ import { CreateFriendDto } from './dto/create-friend.dto';
 import { UpdateFriendDto } from './dto/update-friend.dto';
 import { PrismaClient } from '@prisma/client';
 import { DatabaseService } from '@core/database/database.service';
+import { GetFriendDto } from './dto/get-friend.dto';
 
 @Injectable()
 export class FriendService {
@@ -11,6 +12,7 @@ export class FriendService {
     this.friendRepository = this.databaseService.friend;
   }
   async create(createFriendDto: CreateFriendDto, sent_by: string) {
+    if (this.areFriends(createFriendDto.sent_to, sent_by)) return;
     return this.friendRepository.create({
       data: {
         sent_by_email: sent_by,
@@ -19,8 +21,8 @@ export class FriendService {
     });
   }
 
-  findAll(email: string) {
-    return this.friendRepository.findMany({
+  async findAll(email: string) {
+    const friends = await this.friendRepository.findMany({
       where: {
         AND: [
           {
@@ -31,7 +33,27 @@ export class FriendService {
           },
         ],
       },
+      select: {
+        id: true,
+        sent_at: true,
+        sent_by_email: false,
+        sent_to_email: false,
+        sent_by: {
+          select: {
+            username: true,
+            email: true,
+          },
+        },
+        sent_to: {
+          select: {
+            username: true,
+            email: true,
+          },
+        },
+      },
     });
+    const result = friends.map((friend) => new GetFriendDto(friend, email));
+    return result;
   }
   findAllRequests(email: string) {
     return this.friendRepository.findMany({
@@ -42,6 +64,18 @@ export class FriendService {
             accepted: false,
           },
         ],
+      },
+      select: {
+        sent_to_email: false,
+        sent_by_email: false,
+        sent_at: true,
+        id: true,
+        sent_to: {
+          select: {
+            username: true,
+            email: true,
+          },
+        },
       },
     });
   }
@@ -55,6 +89,13 @@ export class FriendService {
           },
         ],
       },
+      include: {
+        sent_by: {
+          select: {
+            username: true,
+          },
+        },
+      },
     });
   }
   findOne(id: number) {
@@ -62,7 +103,14 @@ export class FriendService {
   }
 
   update(id: number, updateFriendDto: UpdateFriendDto) {
-    return `This action updates a #${id} friend`;
+    return this.friendRepository.update({
+      where: {
+        id: id,
+      },
+      data: {
+        ...updateFriendDto,
+      },
+    });
   }
 
   async remove(id: number) {

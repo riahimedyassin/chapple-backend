@@ -41,6 +41,12 @@ export class UserController {
   findAll() {
     return this.userService.findAll();
   }
+  @Get('me')
+  @UseGuards(JwtGuard)
+  async getCurrentConnected(@User() user: RequestUserInterface) {
+    const connected = await this.userService.findOne(user.email);
+    return new HttpResponse(connected);
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
