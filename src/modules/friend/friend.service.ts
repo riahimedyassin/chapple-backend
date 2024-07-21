@@ -15,8 +15,16 @@ export class FriendService {
     if (this.areFriends(createFriendDto.sent_to, sent_by)) return;
     return this.friendRepository.create({
       data: {
-        sent_by_email: sent_by,
-        sent_to_email: createFriendDto.sent_to,
+        sent_by: {
+          connect: {
+            email: sent_by,
+          },
+        },
+        sent_to: {
+          connect: {
+            email: createFriendDto.sent_to,
+          },
+        },
       },
     });
   }
@@ -122,14 +130,30 @@ export class FriendService {
   }
   async areFriends(emailOne: string, emailTwo: string) {
     return (
-      (await this.friendRepository.findFirst({
-        where: {
-          OR: [
-            { sent_by_email: emailOne, sent_to_email: emailTwo },
-            { sent_by_email: emailTwo, sent_to_email: emailOne },
-          ],
-        },
-      })) != null
+      (
+        await this.friendRepository.findMany({
+          where: {
+            OR: [
+              {
+                sent_by: {
+                  email: emailOne,
+                },
+                sent_to: {
+                  email: emailTwo,
+                },
+              },
+              {
+                sent_by: {
+                  email: emailTwo,
+                },
+                sent_to: {
+                  email: emailOne,
+                },
+              },
+            ],
+          },
+        })
+      ).length == 1
     );
   }
 }

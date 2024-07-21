@@ -8,6 +8,7 @@ import {
   HttpStatus,
   UseGuards,
   ValidationPipe,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Prisma } from '@prisma/client';
@@ -46,6 +47,11 @@ export class UserController {
   async getCurrentConnected(@User() user: RequestUserInterface) {
     const connected = await this.userService.findOne(user.email);
     return new HttpResponse(connected);
+  }
+  @Get('email/:username')
+  async getEmail(@Param('username') username: string) {
+    const result = await this.userService.getEmail(username);
+    return new HttpResponse(result);
   }
 
   // @Get(':id')

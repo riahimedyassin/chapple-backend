@@ -49,4 +49,14 @@ export class UserService {
       },
     });
   }
+  async getEmail(username: string) {
+    return this.userRepository.findUnique({
+      select: {
+        email: true,
+      },
+      where: {
+        username,
+      },
+    });
+  }
 }
