@@ -53,6 +53,9 @@ export class MessageService {
     const messages = await this.messageRepository.findMany({
       skip: start,
       take: PAGINCATION_LIMIT_MESSAGE,
+      orderBy: {
+        sent_at: 'desc',
+      },
       where: {
         OR: [
           {

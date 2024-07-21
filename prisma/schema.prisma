@@ -27,12 +27,13 @@ model User {
 }
 
 model Message {
-  id        Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   content   String
   fromEmail String
   toEmail   String
-  from      User   @relation("from", fields: [fromEmail], references: [email])
-  to        User   @relation("to", fields: [toEmail], references: [email])
+  from      User     @relation("from", fields: [fromEmail], references: [email])
+  to        User     @relation("to", fields: [toEmail], references: [email])
+  sent_at   DateTime @default(now())
 }
 
 model GroupMessage {
