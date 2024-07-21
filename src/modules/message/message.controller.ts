@@ -23,13 +23,18 @@ import { HttpResponse } from '@common/models';
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
-  @Get(':page')
+  @Get(':username/:page')
   @UseGuards(JwtGuard)
   async findAll(
     @User() user: RequestUserInterface,
-    @Param(ParseIntPipe) page: number = 1,
+    @Param('username') username: string,
+    @Param('page', ParseIntPipe) page: number = 1,
   ) {
-    const result = await this.messageService.findAll(user.email, page);
+    const result = await this.messageService.findAll(
+      user.email,
+      page,
+      username,
+    );
     return new HttpResponse(result);
   }
 

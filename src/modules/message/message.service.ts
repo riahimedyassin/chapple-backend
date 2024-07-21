@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { createMessageDto } from './dto';
+import { createMessageDto, GetMessageDto } from './dto';
 import { DatabaseService } from '@core/database/database.service';
 import { PrismaClient } from '@prisma/client';
 import { OnEvent } from '@nestjs/event-emitter';
@@ -30,7 +30,7 @@ export class MessageService {
         { sent_to: createMessageDto.toEmail },
         createMessageDto.fromEmail,
       );
-    this.messageRepository.create({
+    await this.messageRepository.create({
       data: {
         content: createMessageDto.content,
         from: {
@@ -47,23 +47,31 @@ export class MessageService {
     });
   }
 
-  async findAll(email: string, page: number) {
-    const end = PAGINCATION_LIMIT_MESSAGE * page - 1;
+  async findAll(email: string, page: number, username: string) {
+    const end = PAGINCATION_LIMIT_MESSAGE * page;
     const start = end - PAGINCATION_LIMIT_MESSAGE;
-    return this.messageRepository.findMany({
+    const messages = await this.messageRepository.findMany({
       skip: start,
       take: PAGINCATION_LIMIT_MESSAGE,
       where: {
         OR: [
           {
             toEmail: email,
+            from: {
+              username,
+            },
           },
           {
             fromEmail: email,
+            to: {
+              username: username,
+            },
           },
         ],
       },
     });
+    console.log(messages);
+    return messages.map((message) => new GetMessageDto(message));
   }
 
   findOne(id: number) {
