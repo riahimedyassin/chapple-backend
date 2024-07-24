@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { UserService } from 'src/modules/user/user.service';
 import { Socket } from 'socket.io';
+import { SocketAuth } from '@interfaces/SocketAuth';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,8 @@ export class AuthService {
       username: user.username,
     });
   }
-  verfiyToken(token: string): Promise<RequestUserInterface> {
+  async verfiyToken(socket: Socket): Promise<RequestUserInterface> {
+    const token = this.extractTokenFromSocket(socket);
     return this.jwtService
       .verifyAsync(token, { ignoreExpiration: false })
       .then((_) => this.jwtService.decode(token))
@@ -36,6 +38,6 @@ export class AuthService {
     const headers = socket.handshake.headers;
     if (!headers['authorization']) return null;
     const token = headers.authorization.split(' ')[1];
-    return this.verfiyToken(token);
+    return token;
   }
 }

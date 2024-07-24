@@ -35,7 +35,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
   async handleConnection(@ConnectedSocket() client: Socket) {
     try {
-      const payload = await this.authService.extractTokenFromSocket(client);
+      const payload = await this.authService.verfiyToken(client);
       if (!payload) return client.disconnect(true);
       this.userConnectionService.registerConnection(payload.email, client.id);
     } catch (error) {
@@ -60,6 +60,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         content: content,
       });
     }
+    this.server
+      .to(this.userConnectionService.getSocketID(email))
+      .emit('message', {
+        from: 'me',
+        content: content,
+      });
     this.eventEmitter.emit(
       'message.create',
       new createMessageDto(to, content, email),

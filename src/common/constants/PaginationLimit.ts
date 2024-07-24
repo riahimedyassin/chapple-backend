@@ -1,2 +1,2 @@
 export const PAGINCATION_LIMIT = 20;
-export const PAGINCATION_LIMIT_MESSAGE = 15;
+export const PAGINCATION_LIMIT_MESSAGE = 30;

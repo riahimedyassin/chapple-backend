@@ -54,7 +54,7 @@ export class MessageService {
       skip: start,
       take: PAGINCATION_LIMIT_MESSAGE,
       orderBy: {
-        sent_at: 'asc',
+        sent_at: 'desc',
       },
       where: {
         OR: [
@@ -73,8 +73,9 @@ export class MessageService {
         ],
       },
     });
-    console.log(messages);
-    return messages.map((message) => new GetMessageDto(message, email));
+    return messages
+      .reverse()
+      .map((message) => new GetMessageDto(message, email));
   }
 
   findOne(id: number) {
