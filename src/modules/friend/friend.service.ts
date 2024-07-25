@@ -12,7 +12,7 @@ export class FriendService {
     this.friendRepository = this.databaseService.friend;
   }
   async create(createFriendDto: CreateFriendDto, sent_by: string) {
-    if (this.areFriends(createFriendDto.sent_to, sent_by)) return;
+    if (await this.areFriends(createFriendDto.sent_to, sent_by)) return;
     return this.friendRepository.create({
       data: {
         sent_by: {

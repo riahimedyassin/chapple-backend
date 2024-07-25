@@ -8,6 +8,7 @@ import {
   PAGINCATION_LIMIT_MESSAGE,
 } from '@common/constants';
 import { FriendService } from '@modules/friend/friend.service';
+import { groupByDate } from '@common/utils';
 
 @Injectable()
 export class MessageService {
@@ -73,9 +74,10 @@ export class MessageService {
         ],
       },
     });
-    return messages
+    const result = messages
       .reverse()
       .map((message) => new GetMessageDto(message, email));
+    return groupByDate(result);
   }
 
   findOne(id: number) {
