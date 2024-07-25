@@ -9,7 +9,7 @@ export class GroupConnectionService {
   private readonly groupConnected: Set<number> = new Set();
   private readonly cachedAllowedAcces: Map<number, string[]> = new Map();
   registerConnection(primary: number): void {
-    this.groupConnected.add(primary);
+    if (!this.groupConnected.has(primary)) this.groupConnected.add(primary);
     this.cachedAllowedAcces.set(primary, []);
   }
   dropConnection(primary: number): void {
