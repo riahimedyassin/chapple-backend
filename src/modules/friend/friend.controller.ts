@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { FriendService } from './friend.service';
 import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-friend.dto';
 import { JwtGuard } from '@core/auth/guards/JwtGuard.guard';
 import { User } from '@common/decorators/user/user.decorator';
 import { RequestUserInterface } from '@interfaces/RequestUser.interface';

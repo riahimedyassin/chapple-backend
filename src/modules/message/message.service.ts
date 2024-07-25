@@ -49,11 +49,8 @@ export class MessageService {
   }
 
   async findAll(email: string, page: number, username: string) {
-    const end = PAGINCATION_LIMIT_MESSAGE * page;
-    const start = end - PAGINCATION_LIMIT_MESSAGE;
     const messages = await this.messageRepository.findMany({
-      skip: start,
-      take: PAGINCATION_LIMIT_MESSAGE,
+      take: PAGINCATION_LIMIT_MESSAGE * page,
       orderBy: {
         sent_at: 'desc',
       },
@@ -88,7 +85,11 @@ export class MessageService {
     return `This action updates a #${id} message`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} message`;
+  async remove(id: number) {
+    return this.messageRepository.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

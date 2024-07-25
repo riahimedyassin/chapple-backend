@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UseGuards,
   ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { createMessageDto } from './dto';
@@ -49,7 +50,8 @@ export class MessageController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.messageService.remove(+id);
+  @HttpCode(204)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.messageService.remove(id);
   }
 }
