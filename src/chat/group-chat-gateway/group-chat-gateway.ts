@@ -3,6 +3,7 @@ import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -21,7 +22,9 @@ import { AuthService } from '@core/auth/auth.service';
     origin: '*',
   },
 })
-export class GroupChatGateway implements OnGatewayConnection {
+export class GroupChatGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Socket;
   constructor(
@@ -57,13 +60,13 @@ export class GroupChatGateway implements OnGatewayConnection {
 
   @SubscribeMessage('message')
   @UseGuards(SocketJwtGuard)
-  onMessage(
+  async onMessage(
     @ConnectedSocket() client: SocketAuth,
     @MessageBody() { to, content }: MessageModel<number>,
   ) {
     if (!this.groupConnectionService.isConnected(to))
       this.groupConnectionService.registerConnection(to);
-    if (!this.groupConnectionService.isAllowed(to, client))
+    if (!(await this.groupConnectionService.isAllowed(to, client)))
       return client.emit('error', 'Forbidden');
     const from = client.handshake.user.email;
     this.server.to(to.toString()).emit('message', {
@@ -75,5 +78,11 @@ export class GroupChatGateway implements OnGatewayConnection {
       sent_by: from,
       content,
     });
+  }
+  handleDisconnect(
+    @ConnectedSocket()
+    client: SocketAuth,
+  ) {
+    this.groupConnectionService.unregisterUser(client.id);
   }
 }
