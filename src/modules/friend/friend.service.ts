@@ -4,6 +4,7 @@ import { UpdateFriendDto } from './dto/update-friend.dto';
 import { PrismaClient } from '@prisma/client';
 import { DatabaseService } from '@core/database/database.service';
 import { GetFriendDto } from './dto/get-friend.dto';
+import { GetFriendRequestDto } from './dto/get-friend-request.dto';
 
 @Injectable()
 export class FriendService {
@@ -63,7 +64,20 @@ export class FriendService {
     const result = friends.map((friend) => new GetFriendDto(friend, email));
     return result;
   }
-  findAllRequests(email: string) {
+  async findAllRequestsNumber(email: string) {
+    return this.friendRepository.count({
+      where: {
+        AND: [
+          { sent_by_email: email },
+          {
+            accepted: false,
+          },
+        ],
+      },
+    });
+  }
+
+  async findAllRequests(email: string): Promise<GetFriendRequestDto[]> {
     return this.friendRepository.findMany({
       where: {
         AND: [

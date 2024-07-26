@@ -47,6 +47,12 @@ export class FriendController {
     const result = await this.friendService.findAllRequests(user.email);
     return new HttpResponse(result, 'Friend list retrieved sucessfully');
   }
+  @Get('requests/count')
+  @UseGuards(JwtGuard)
+  async findAllRequestNumber(@User() user: RequestUserInterface) {
+    const result = await this.friendService.findAllRequestsNumber(user.email);
+    return new HttpResponse(result, 'Friend list retrieved sucessfully');
+  }
   @Get('invitations')
   @UseGuards(JwtGuard)
   async findAllInvitations(@User() user: RequestUserInterface) {
