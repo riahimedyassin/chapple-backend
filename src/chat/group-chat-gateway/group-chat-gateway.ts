@@ -1,4 +1,4 @@
-import { Injectable, Logger, UseGuards } from '@nestjs/common';
+import { Body, Injectable, Logger, UseGuards } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -44,19 +44,18 @@ export class GroupChatGateway
   @UseGuards(SocketJwtGuard)
   async handleJoinRoom(
     @ConnectedSocket() client: SocketAuth,
-    @MessageBody() payload: { group: number },
+    @MessageBody() { group }: { group: number },
   ) {
-    if (!payload.group)
-      return client.emit('error', 'Provide the group chat id');
-    if (!this.groupConnectionService.isConnected(payload.group))
-      this.groupConnectionService.registerConnection(payload.group);
+    if (!group) return client.emit('error', 'Provide the group chat id');
+    if (!this.groupConnectionService.isConnected(group))
+      this.groupConnectionService.registerConnection(group);
     const isAllowed = await this.groupConnectionService.isAllowed(
-      payload.group,
+      group,
       client,
     );
-    console.log(isAllowed)
     if (!isAllowed) return client.emit('error', 'Forbidden');
-    client.join(payload.group.toString());
+    // await this.groupConnectionService.unregisterUser(client.id);
+    await client.join(`group:${group}`);
   }
 
   @SubscribeMessage('message')
@@ -70,7 +69,7 @@ export class GroupChatGateway
     if (!(await this.groupConnectionService.isAllowed(to, client)))
       return client.emit('error', 'Forbidden');
     const from = client.handshake.user.email;
-    this.server.to(to.toString()).emit('message', {
+    this.server.to(`group:${to}`).emit(`group:${to}:message`, {
       content: content,
       from: from,
     });
@@ -80,6 +79,19 @@ export class GroupChatGateway
       content,
     });
   }
+  @SubscribeMessage('leave')
+  @UseGuards(SocketJwtGuard)
+  async handleLeave(
+    @MessageBody() payload: { group: number },
+    @ConnectedSocket() socket: SocketAuth,
+  ) {
+    await socket.leave(`group:${payload.group}`);
+    return this.groupConnectionService.dropConnectionFromSocketID(
+      payload.group,
+      socket.id,
+    );
+  }
+
   handleDisconnect(
     @ConnectedSocket()
     client: SocketAuth,
