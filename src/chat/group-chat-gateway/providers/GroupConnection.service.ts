@@ -41,7 +41,7 @@ export class GroupConnectionService {
   async isAllowed(groupID: number, socket: SocketAuth) {
     if (this.cachedAllowedAcces.get(groupID).includes(socket.id)) return true;
     const allowed = await this.userGroupService.isMember(
-      groupID.toString(),
+      groupID,
       socket.handshake.user.email,
     );
     if (allowed) return this.registerCache(groupID, socket);

@@ -54,6 +54,7 @@ export class GroupChatGateway
       payload.group,
       client,
     );
+    console.log(isAllowed)
     if (!isAllowed) return client.emit('error', 'Forbidden');
     client.join(payload.group.toString());
   }

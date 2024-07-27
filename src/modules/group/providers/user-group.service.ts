@@ -8,17 +8,11 @@ export class UserGroupService {
   constructor(private readonly databaseService: DatabaseService) {
     this.userGroupRepository = this.databaseService.user_group;
   }
-  async isMember(group: string, email: string) {
+  async isMember(group: number, email: string) {
     return await this.userGroupRepository.findFirst({
       where: {
-        AND: [
-          {
-            groupId: +group,
-          },
-          {
-            userEmail: email,
-          },
-        ],
+        groupId: +group,
+        userEmail: email,
       },
     });
   }

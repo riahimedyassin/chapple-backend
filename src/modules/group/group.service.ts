@@ -44,7 +44,6 @@ export class GroupService {
 
   async findAll(email: string) {
     return this.groupRepository.findMany({
-      include: { user_group: true },
       where: {
         OR: [
           {
@@ -63,7 +62,7 @@ export class GroupService {
   }
 
   async findOne(id: number, email: string) {
-    return await this.groupRepository.findUnique({
+    return await this.groupRepository.findFirst({
       where: {
         id,
         OR: [
