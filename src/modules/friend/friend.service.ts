@@ -67,12 +67,8 @@ export class FriendService {
   async findAllRequestsNumber(email: string) {
     return this.friendRepository.count({
       where: {
-        AND: [
-          { sent_by_email: email },
-          {
-            accepted: false,
-          },
-        ],
+        sent_to_email: email,
+        accepted: false,
       },
     });
   }
@@ -80,19 +76,16 @@ export class FriendService {
   async findAllRequests(email: string): Promise<GetFriendRequestDto[]> {
     return this.friendRepository.findMany({
       where: {
-        AND: [
-          { sent_by_email: email },
-          {
-            accepted: false,
-          },
-        ],
+        sent_to_email: email,
+        accepted: false,
       },
       select: {
         sent_to_email: false,
         sent_by_email: false,
         sent_at: true,
         id: true,
-        sent_to: {
+        sent_to: false,
+        sent_by: {
           select: {
             username: true,
             email: true,

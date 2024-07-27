@@ -6,7 +6,7 @@ type SentTo = {
 export class GetFriendRequestDto {
   constructor(
     public readonly sent_at: Date,
-    public readonly sent_to: SentTo,
+    public readonly sent_by: SentTo,
     public readonly id: number,
   ) {}
 }

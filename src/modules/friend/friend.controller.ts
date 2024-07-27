@@ -62,8 +62,11 @@ export class FriendController {
 
   @Patch('respond/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async aceeptFriendRequest(@Param('id', ParseIntPipe) id: number) {
-    return this.friendService.update(id, { accepted: true });
+  async aceeptFriendRequest(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { accepted: boolean },
+  ) {
+    return this.friendService.update(id, { accepted: body.accepted });
   }
 
   // @Get(':id')
