@@ -19,10 +19,15 @@ import { JwtGuard } from '@core/auth/guards/JwtGuard.guard';
 import { User } from '@common/decorators/user/user.decorator';
 import { RequestUserInterface } from '@interfaces/RequestUser.interface';
 import { HttpResponse } from '@common/models';
+import { UserGroupService } from './providers/user-group.service';
+import { GetUsersGroupDto } from './dto/get-group-users';
 
 @Controller('groups')
 export class GroupController {
-  constructor(private readonly groupService: GroupService) {}
+  constructor(
+    private readonly groupService: GroupService,
+    private readonly userGroupService: UserGroupService,
+  ) {}
 
   @Post()
   @UseGuards(JwtGuard)
@@ -49,7 +54,22 @@ export class GroupController {
   ) {
     const result = await this.groupService.findOne(id, user.email);
     if (!result) throw new NotFoundException('Group not found');
-    return result;
+    return new HttpResponse(result);
+  }
+
+  @Get('members/:id')
+  @UseGuards(JwtGuard)
+  async findGroupUsers(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: RequestUserInterface,
+  ) {
+    const email = user.email;
+    // Transforming the data format could be done in a better way.
+    const users = await this.groupService.findGroupUsers(id, email);
+    return new HttpResponse(
+      GetUsersGroupDto.fromPlainGroupResponse(users),
+      'Chat users retrieved sucssussfully',
+    );
   }
 
   // @Patch(':id')

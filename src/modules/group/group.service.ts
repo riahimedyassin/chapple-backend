@@ -70,6 +70,9 @@ export class GroupService {
           { user_group: { some: { userEmail: email } } },
         ],
       },
+      include: {
+        user_group: true,
+      },
     });
   }
 
@@ -79,5 +82,36 @@ export class GroupService {
 
   remove(id: number) {
     return `This action removes a #${id} group`;
+  }
+  async findGroupUsers(group: number, email: string) {
+    return this.groupRepository.findMany({
+      where: {
+        id: group,
+        OR: [
+          {
+            ownerEmail: email,
+          },
+          {
+            user_group: {
+              some: {
+                userEmail: email,
+              },
+            },
+          },
+        ],
+      },
+      select: {
+        user_group: {
+          select: {
+            user: {
+              select: {
+                username: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }

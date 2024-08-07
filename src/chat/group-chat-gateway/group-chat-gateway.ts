@@ -1,4 +1,11 @@
-import { Body, Injectable, Logger, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Injectable,
+  Logger,
+  UseFilters,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -15,6 +22,7 @@ import { SocketJwtGuard } from '@core/auth/guards/SocketJwtGuard.guard';
 import { SocketAuth } from '@interfaces/SocketAuth';
 import { MessageModel } from '@common/models';
 import { AuthService } from '@core/auth/auth.service';
+import { BadRequestWsFilter } from '@common/filters/bad-request-ws/bad-request-ws.filter';
 
 @WebSocketGateway(3002, {
   namespace: 'group',
@@ -59,10 +67,11 @@ export class GroupChatGateway
   }
 
   @SubscribeMessage('message')
+  @UseFilters(new BadRequestWsFilter())
   @UseGuards(SocketJwtGuard)
   async onMessage(
     @ConnectedSocket() client: SocketAuth,
-    @MessageBody() { to, content }: MessageModel<number>,
+    @MessageBody(ValidationPipe) { to, content }: MessageModel<number>,
   ) {
     if (!this.groupConnectionService.isConnected(to))
       this.groupConnectionService.registerConnection(to);
